@@ -141,7 +141,6 @@ services:
 
 EOF
 
-
 sudo apt -y install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable'
@@ -156,12 +155,16 @@ sudo apt -y install docker-compose
 sleep 3 
 
 cd /home/ubuntu/
-# ADMIN_USER=admin  
-# ADMIN_PASSWORD=admin
 
 sudo git clone  https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana.git
 cd Docker-Compose-Prometheus-and-Grafana
 sudo cp /home/ubuntu/prometheus-compose.yml /home/ubuntu/Docker-Compose-Prometheus-and-Grafana/docker-compose.yml
-
-
 sudo docker-compose up -d
+
+
+cd /home/ubuntu/
+node_exporter_version=0.18.0
+wget https://github.com/prometheus/node_exporter/releases/download/v$node_exporter_version/node_exporter-$node_exporter_version.linux-amd64.tar.gz
+tar xvfz node_exporter-$node_exporter_version.linux-amd64.tar.gz
+cd  node_exporter-$node_exporter_version.linux-amd64
+nohup ./node_exporter >> ./node_exporter.log &

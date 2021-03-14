@@ -60,44 +60,36 @@ resource "aws_route_table_association" "prometheus_route_table_association" {
   route_table_id = aws_route_table.prometheus_route_table.id
 }
 
+variable "sg_ports" {
+  type        = list(number)
+  description = "list of ingress ports"
+  default     = [9090, 8080,9093, 9091, 9100,3000,22]
+}
 
 resource "aws_security_group" "prometheus_security_group" {
-  name        = "prometheus_security_group"
-  description = "Security group for prometheus"
-
+  description = "Ingress to access internal containers"
+  
   vpc_id = aws_vpc.prometheus_vpc.id
 
 
-  # Promethus UI
-  ingress {
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # Grafana access for 3000
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.sg_ports
+    iterator = port
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
-  # SSH access for 22
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Outbound to Internet to install Docker Images?
-  egress {
+   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
 
   tags = {
     Name        = "${var.name}_sg"
