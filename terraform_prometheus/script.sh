@@ -4,6 +4,9 @@ date
 sudo apt-get update
 sudo apt-get upgrade -y
 
+
+# This to configure grafana,  prometheus and  prometheus_export (compose-file)
+
 cat << 'EOF' > /home/ubuntu/prometheus-compose.yml
 version: '2.1'
 
@@ -150,6 +153,7 @@ sudo apt -y install docker-ce
 sleep 5 
 date 
 
+## Install docker compose
 sudo apt -y install docker-compose
 
 sleep 3 
@@ -158,6 +162,8 @@ cd /home/ubuntu/
 
 sudo git clone  https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana.git
 cd Docker-Compose-Prometheus-and-Grafana
+
+## replace dockers containers ports to be exposed externally 
 sudo cp /home/ubuntu/prometheus-compose.yml /home/ubuntu/Docker-Compose-Prometheus-and-Grafana/docker-compose.yml
 sudo docker-compose up -d
 
@@ -168,3 +174,59 @@ wget https://github.com/prometheus/node_exporter/releases/download/v$node_export
 tar xvfz node_exporter-$node_exporter_version.linux-amd64.tar.gz
 cd  node_exporter-$node_exporter_version.linux-amd64
 nohup ./node_exporter >> ./node_exporter.log &
+
+##  Install python for the weather application 
+sudo apt install python3-pip -y 
+
+## Code for the weather Application
+echo "downloading weather application"
+cat << 'EOF' > /home/ubuntu/weather.py
+
+import requests
+import os
+from datetime import datetime
+
+user_api = '10febb0afc989e6499d91d01598ee3d5'
+location = 'tallinn'
+
+complete_api_link = "https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid="+user_api
+api_link = requests.get(complete_api_link)
+api_data = api_link.json()
+
+#create variables to store and display data
+temp_city = ((api_data['main']['temp']) - 273.15)
+weather_desc = api_data['weather'][0]['description']
+hmdt = api_data['main']['humidity']
+wind_spd = api_data['wind']['speed']
+date_time = datetime.now().strftime("%d %b %Y | %I:%M:%S %p")
+
+print ("-------------------------------------------------------------")
+print ("Weather Stats for - {}  || {}".format(location.upper(), date_time))
+print ("-------------------------------------------------------------")
+
+print ("Current temperature is: {:.2f} deg C".format(temp_city))
+print ("Current weather desc  :",weather_desc)
+print ("Current Humidity      :",hmdt, '%')
+print ("Current wind speed    :",wind_spd ,'kmph')
+EOF
+
+sleep 5 
+
+## Dockerize the application into image 
+echo "creating dockerFile"
+date
+
+cat << 'EOF' > /home/ubuntu/Dockerfile
+FROM python:3.8
+
+ADD weather.py .
+
+RUN pip install pystrich requests 
+
+
+CMD [ "python", "./weather.py"]
+EOF
+
+cd /home/ubuntu/
+sudo docker build -t weather-app .
+sudo docker run -it -d -p 1010:80  weather-app bash
