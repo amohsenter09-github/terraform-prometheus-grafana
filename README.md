@@ -11,6 +11,7 @@
 ############################################################
 What will happen. 
 1-	Terrafom code with provision 13 resources
+
 2-	Terrform will create ec2 instance and will configure docker and docker compose.
 3-	Terrafrom will expose all container ports via dynamic security group to be access from outside.
 4-	Docker-compose will run prometheus-compose.yml startup all required containers.
