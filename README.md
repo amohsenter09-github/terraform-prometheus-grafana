@@ -14,6 +14,7 @@ What will happen.
 
 2-	Terrform will create ec2 instance and will configure docker and docker compose.
 3-	Terrafrom will expose all container ports via dynamic security group to be access from outside.
+
 4-	Docker-compose will run prometheus-compose.yml startup all required containers.
 5-	Terrofom will output all localhost urls with theirs assigned port to be access externally. At the end of terraform apply you will something like below 
 alertmanager_URL = "http://3.237.239.23:9093"
