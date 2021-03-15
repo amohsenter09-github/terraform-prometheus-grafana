@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 High level structure
 
 ###########################################################
@@ -23,4 +24,6 @@ pushgateway_URL = http://3.237.239.23:9091
 6-	Terrafom will create the weather application and create an image out of it and run it during the instance startup. 
 7-	weather.py application will be dockerized and and imaged and run as container on port 9090:90. You may exec the container and run python3 weather.py and will provide you the below data for Tallinn 
 
+=======
+>>>>>>> 073fb06f664a24b9a07fe30114ecc8dea542ce9e
 

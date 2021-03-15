@@ -63,12 +63,12 @@ resource "aws_route_table_association" "prometheus_route_table_association" {
 variable "sg_ports" {
   type        = list(number)
   description = "list of ingress ports"
-  default     = [9090, 8080,9093, 9091, 9100,3000,22]
+  default     = [9090, 8080, 9093, 9091, 9100, 3000, 22]
 }
 
 resource "aws_security_group" "prometheus_security_group" {
   description = "Ingress to access internal containers"
-  
+
   vpc_id = aws_vpc.prometheus_vpc.id
 
 
@@ -83,7 +83,7 @@ resource "aws_security_group" "prometheus_security_group" {
     }
   }
 
-   egress {
+  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
